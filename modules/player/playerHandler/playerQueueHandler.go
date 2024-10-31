@@ -6,15 +6,15 @@ import (
 )
 
 type (
-	PlayerHttpHandler interface {
+	PlayerQueueHandler interface {
 	}
 
-	playerHttpHandler struct {
+	playerQueueHandler struct {
 		playerService playerService.PlayerService
 		config        *config.Config
 	}
 )
 
-func NewPlayerHttpHandler(playerService playerService.PlayerService, config *config.Config) PlayerHttpHandler {
-	return &playerHttpHandler{playerService, config}
+func NewPlayerQueueHandler(playerService playerService.PlayerService, config *config.Config) PlayerQueueHandler {
+	return &playerQueueHandler{playerService, config}
 }
