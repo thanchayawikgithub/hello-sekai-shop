@@ -14,6 +14,6 @@ type (
 	}
 )
 
-func NewInventoryHttpHandler(config *config.Config, inventoryService inventoryService.InventoryService) InventoryHttpHandler {
+func NewInventoryHttpHandler(inventoryService inventoryService.InventoryService, config *config.Config) InventoryHttpHandler {
 	return &inventoryHttpHandler{inventoryService, config}
 }

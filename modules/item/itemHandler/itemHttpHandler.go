@@ -14,6 +14,6 @@ type (
 	}
 )
 
-func NewItemHttpHandler(config *config.Config, itemService itemService.ItemService) ItemHttpHandler {
+func NewItemHttpHandler(itemService itemService.ItemService, config *config.Config) ItemHttpHandler {
 	return &itemHttpHandler{itemService, config}
 }

@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
-	"log"
 
 	"github.com/thanchayawikgithub/hello-sekai-shop/config"
 	"github.com/thanchayawikgithub/hello-sekai-shop/pkg/database"
+	"github.com/thanchayawikgithub/hello-sekai-shop/server"
 )
 
 func main() {
 	ctx := context.Background()
 
 	config := config.LoadConfig("dev", "auth")
-	db := database.Conn(&config.DB)
 
+	db := database.Conn(&config.DB)
 	defer db.Disconnect(ctx)
-	log.Println(db)
+
+	server.Start(ctx, config, db)
 }
