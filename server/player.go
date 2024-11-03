@@ -18,6 +18,5 @@ func (s *server) playerServer() {
 	_ = gueueHandler
 
 	player := s.app.Group("/player/v1")
-
-	_ = player
+	player.GET("/health", s.healthCheckService)
 }

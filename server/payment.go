@@ -16,6 +16,5 @@ func (s *server) paymentServer() {
 	_ = queueHandler
 
 	payment := s.app.Group("/payment/v1")
-
-	_ = payment
+	payment.GET("/health", s.healthCheckService)
 }

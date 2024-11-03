@@ -95,4 +95,5 @@ func Start(ctx context.Context, config *config.Config, db *mongo.Client) {
 	go s.gracefulShutdown(ctx, quit)
 
 	s.httpListening()
+
 }

@@ -18,6 +18,5 @@ func (s *server) inventoryServer() {
 	_ = queueHandler
 
 	inventory := s.app.Group("/inventory/v1")
-
-	_ = inventory
+	inventory.GET("/health", s.healthCheckService)
 }
