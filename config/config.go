@@ -2,7 +2,6 @@ package config
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
@@ -57,36 +56,29 @@ type (
 	}
 )
 
-var (
-	once     sync.Once
-	config   Config
-	validate *validator.Validate
-)
-
 // LoadConfig loads the configuration based on the environment and path
 func LoadConfig(state string, service string) *Config {
-	once.Do(func() {
-		viper.SetConfigName("config." + service)
-		viper.SetConfigType("yaml")
-		viper.AddConfigPath("config/" + state)
+	var config Config
+	viper.SetConfigName("config." + service)
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("config/" + state)
 
-		viper.AutomaticEnv()
-		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-		if err := viper.ReadInConfig(); err != nil {
-			panic(err)
-		}
+	if err := viper.ReadInConfig(); err != nil {
+		panic(err)
+	}
 
-		if err := viper.Unmarshal(&config); err != nil {
-			panic(err)
-		}
+	if err := viper.Unmarshal(&config); err != nil {
+		panic(err)
+	}
 
-		validate = validator.New()
+	validate := validator.New()
 
-		if err := validate.Struct(config); err != nil {
-			panic(err)
-		}
-	})
+	if err := validate.Struct(config); err != nil {
+		panic(err)
+	}
 
 	return &config
 }
