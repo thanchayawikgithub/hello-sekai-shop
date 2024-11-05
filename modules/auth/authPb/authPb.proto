@@ -11,7 +11,7 @@ message CredentialSearchReq {
 }
 
 message CredentialSearchRes {
-  bool isValid = 1;
+  bool is_valid = 1;
 }
 
 message RolesCountReq {}
