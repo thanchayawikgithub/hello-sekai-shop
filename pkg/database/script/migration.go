@@ -30,5 +30,6 @@ func main() {
 	case "item":
 	case "payment":
 	case "player":
+		migration.PlayerMigrate(ctx, cfg)
 	}
 }

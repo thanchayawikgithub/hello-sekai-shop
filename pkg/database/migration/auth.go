@@ -21,7 +21,7 @@ func AuthMigrate(ctx context.Context, cfg *config.Config) {
 
 	//auth
 	col := db.Collection("auth")
-	indexs, err := col.Indexes().CreateMany(ctx, []mongo.IndexModel{
+	indexes, err := col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "player_id", Value: 1}}},
 		{Keys: bson.D{{Key: "refresh_token", Value: 1}}},
@@ -30,13 +30,13 @@ func AuthMigrate(ctx context.Context, cfg *config.Config) {
 		panic(err)
 	}
 
-	for _, index := range indexs {
+	for _, index := range indexes {
 		log.Printf("Index: %s", index)
 	}
 
 	//roles
 	col = db.Collection("roles")
-	indexs, err = col.Indexes().CreateMany(ctx, []mongo.IndexModel{
+	indexes, err = col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "code", Value: 1}}},
 	})
@@ -44,14 +44,14 @@ func AuthMigrate(ctx context.Context, cfg *config.Config) {
 		panic(err)
 	}
 
-	for _, index := range indexs {
+	for _, index := range indexes {
 		log.Printf("Index: %s", index)
 	}
 
 	documents := func() []interface{} {
 		roles := []*auth.Role{
 			{
-				Title: "user",
+				Title: "player",
 				Code:  0,
 			},
 			{

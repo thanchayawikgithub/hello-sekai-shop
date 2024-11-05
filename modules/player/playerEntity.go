@@ -34,4 +34,10 @@ type (
 		PlayerID string  `json:"player_id" bson:"player_id"`
 		Balance  float64 `json:"balance" bson:"balance"`
 	}
+
+	PlayerTransaction struct {
+		PlayerID  string    `bson:"player_id"`
+		Amount    float64   `bson:"amount"`
+		CreatedAt time.Time `bson:"created_at"`
+	}
 )

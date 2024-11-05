@@ -12,29 +12,11 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
 
-  inventory-db:
-    image: mongo:latest
-    container_name: inventory-db
-    ports:
-      - 27018:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-
   item-db:
     image: mongo:latest
     container_name: item-db
     ports:
-      - 27019:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-
-  payment-db:
-    image: mongo:latest
-    container_name: payment-db
-    ports:
-      - 27020:27017
+      - 27018:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
@@ -42,6 +24,24 @@ services:
   player-db:
     image: mongo:latest
     container_name: player-db
+    ports:
+      - 27019:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  inventory-db:
+    image: mongo:latest
+    container_name: inventory-db
+    ports:
+      - 27020:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  payment-db:
+    image: mongo:latest
+    container_name: payment-db
     ports:
       - 27021:27017
     environment:
