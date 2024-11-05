@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/thanchayawikgithub/hello-sekai-shop";
+
+
+message IsAvailableToSellReq {
+  string player_id = 1;
+  string item_id = 2;
+}
+
+message IsAvailableToSellRes {
+  bool is_available = 1;
+}
+
+service InventoryGrpcService {
+  rpc IsAvailableToSell(IsAvailableToSellReq) returns (IsAvailableToSellRes) {}
+}
