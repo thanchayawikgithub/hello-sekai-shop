@@ -28,6 +28,7 @@ func main() {
 		migration.AuthMigrate(ctx, cfg)
 	case "inventory":
 	case "item":
+		migration.ItemMigrate(ctx, cfg)
 	case "payment":
 	case "player":
 		migration.PlayerMigrate(ctx, cfg)
