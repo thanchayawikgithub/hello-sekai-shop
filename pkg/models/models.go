@@ -1,12 +1,12 @@
 package models
 
 type (
-	PaginateRequest struct {
+	PaginateReq struct {
 		Start string `query:"start" validate:"max=64"`
 		Limit int    `query:"limit" validate:"required,min=2,max=10"`
 	}
 
-	PaginateResponse struct {
+	PaginateRes struct {
 		Data  interface{}   `json:"data"`
 		Limit int           `json:"limit"`
 		Total int64         `json:"total"`
