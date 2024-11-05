@@ -8,8 +8,8 @@ import (
 )
 
 type healthCheck struct {
-	App    string `json:app`
-	Status string `json:status`
+	App    string `json:"app"`
+	Status string `json:"status"`
 }
 
 func (s *server) healthCheckService(ctx echo.Context) error {

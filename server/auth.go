@@ -15,6 +15,6 @@ func (s *server) authServer() {
 	_ = httpHandler
 	_ = grpcHandler
 
-	auth := s.app.Group("/auth/v1")
-	auth.GET("/health", s.healthCheckService)
+	auth := s.app.Group("/auth_v1")
+	auth.GET("", s.healthCheckService)
 }

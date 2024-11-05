@@ -15,6 +15,6 @@ func (s *server) paymentServer() {
 	_ = httpHandler
 	_ = queueHandler
 
-	payment := s.app.Group("/payment/v1")
-	payment.GET("/health", s.healthCheckService)
+	payment := s.app.Group("/payment_v1")
+	payment.GET("", s.healthCheckService)
 }

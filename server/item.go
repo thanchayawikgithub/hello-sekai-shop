@@ -15,6 +15,6 @@ func (s *server) itemServer() {
 	_ = httpHandler
 	_ = grpcHandler
 
-	item := s.app.Group("/item/v1")
-	item.GET("/health", s.healthCheckService)
+	item := s.app.Group("/item_v1")
+	item.GET("", s.healthCheckService)
 }
