@@ -8,7 +8,7 @@ STATE := dev
 # Define services
 SERVICES := auth inventory item payment player
 
-# Default target
+# Default targety
 .PHONY: all
 all: $(SERVICES)
 

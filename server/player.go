@@ -1,9 +1,13 @@
 package server
 
 import (
+	"log"
+
 	"github.com/thanchayawikgithub/hello-sekai-shop/modules/player/playerHandler"
+	playerPb "github.com/thanchayawikgithub/hello-sekai-shop/modules/player/playerPb"
 	"github.com/thanchayawikgithub/hello-sekai-shop/modules/player/playerRepository"
 	"github.com/thanchayawikgithub/hello-sekai-shop/modules/player/playerService"
+	"github.com/thanchayawikgithub/hello-sekai-shop/pkg/grpc"
 )
 
 func (s *server) playerServer() {
@@ -12,6 +16,15 @@ func (s *server) playerServer() {
 	httpHandler := playerHandler.NewPlayerHttpHandler(service, s.config)
 	grpcHandler := playerHandler.NewPlayerGrpcHandler(service)
 	gueueHandler := playerHandler.NewPlayerQueueHandler(service, s.config)
+
+	//Grpc
+	go func() {
+		gprcServer, listen := grpc.NewGrpcServer(&s.config.Jwt, s.config.Grpc.PlayerURL)
+		playerPb.RegisterPlayerGrpcServiceServer(gprcServer, grpcHandler)
+
+		gprcServer.Serve(listen)
+		log.Println("Grpc server is running on", s.config.Grpc.PlayerURL)
+	}()
 
 	_ = httpHandler
 	_ = grpcHandler

@@ -5,12 +5,12 @@ syntax = "proto3";
 option go_package = "github.com/thanchayawikgithub/hello-sekai-shop";
 
 // Struct
-message CredentialSearchReq {
+message AccessTokenSearchReq {
   string access_token = 1;
   string refresh_token = 2;
 }
 
-message CredentialSearchRes {
+message AccessTokenSearchRes {
   bool is_valid = 1;
 }
 
@@ -22,6 +22,6 @@ message RolesCountRes {
 
 //Methods
 service AuthGrpcService {
-  rpc CredentialSearch(CredentialSearchReq) returns (CredentialSearchRes) {}
+  rpc AccessTokenSearch(AccessTokenSearchReq) returns (AccessTokenSearchRes) {}
   rpc RolesCount(RolesCountReq) returns (RolesCountRes) {}
 }
