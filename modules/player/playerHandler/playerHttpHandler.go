@@ -17,6 +17,7 @@ type (
 		CreatePlayer(c echo.Context) error
 		GetPlayerProfile(c echo.Context) error
 		CreatePlayerTransaction(c echo.Context) error
+		GetPlayerSavingAccount(c echo.Context) error
 	}
 
 	playerHttpHandler struct {
@@ -66,9 +67,21 @@ func (h *playerHttpHandler) CreatePlayerTransaction(c echo.Context) error {
 		return response.Error(c, http.StatusBadRequest, err)
 	}
 
-	if err := h.playerService.CreatePlayerTransaction(c.Request().Context(), playerTransactionReq); err != nil {
+	playerSavingAccount, err := h.playerService.CreatePlayerTransaction(c.Request().Context(), playerTransactionReq)
+	if err != nil {
 		return response.Error(c, http.StatusInternalServerError, err)
 	}
 
-	return response.Success(c, http.StatusCreated, map[string]string{"message": "player transaction created successfully"})
+	return response.Success(c, http.StatusCreated, playerSavingAccount)
+}
+
+func (h *playerHttpHandler) GetPlayerSavingAccount(c echo.Context) error {
+	playerID := c.Param("player_id")
+
+	playerSavingAccount, err := h.playerService.GetPlayerSavingAccount(c.Request().Context(), playerID)
+	if err != nil {
+		return response.Error(c, http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, http.StatusOK, playerSavingAccount)
 }

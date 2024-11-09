@@ -15,7 +15,8 @@ type (
 	PlayerService interface {
 		CreatePlayer(ctx context.Context, req *player.CreatePlayerReq) (*player.PlayerProfile, error)
 		GetPlayerProfile(ctx context.Context, playerID string) (*player.PlayerProfile, error)
-		CreatePlayerTransaction(ctx context.Context, req *player.CreatePlayerTransactionReq) error
+		CreatePlayerTransaction(ctx context.Context, req *player.CreatePlayerTransactionReq) (*player.PlayerSavingAccount, error)
+		GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error)
 	}
 
 	playerService struct {
@@ -79,14 +80,18 @@ func (s *playerService) GetPlayerProfile(ctx context.Context, playerID string) (
 	}, nil
 }
 
-func (s *playerService) CreatePlayerTransaction(ctx context.Context, req *player.CreatePlayerTransactionReq) error {
+func (s *playerService) CreatePlayerTransaction(ctx context.Context, req *player.CreatePlayerTransactionReq) (*player.PlayerSavingAccount, error) {
 	if err := s.playerRepo.InsertOnePlayerTransaction(ctx, &player.PlayerTransaction{
 		PlayerID:  req.PlayerID,
 		Amount:    req.Amount,
 		CreatedAt: utils.LocalTime(),
 	}); err != nil {
-		return errors.New("error: failed to create player transaction")
+		return nil, errors.New("error: failed to create player transaction")
 	}
 
-	return nil
+	return s.GetPlayerSavingAccount(ctx, req.PlayerID)
+}
+
+func (s *playerService) GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error) {
+	return s.playerRepo.GetPlayerSavingAccount(ctx, playerID)
 }

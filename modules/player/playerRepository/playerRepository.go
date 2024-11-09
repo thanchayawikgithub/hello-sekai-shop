@@ -21,6 +21,7 @@ type (
 		InsertOnePlayer(ctx context.Context, req *player.Player) (bson.ObjectID, error)
 		FindOnePlayerProfile(ctx context.Context, playerID string) (*player.PlayerProfileBson, error)
 		InsertOnePlayerTransaction(ctx context.Context, playerTransaction *player.PlayerTransaction) error
+		GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error)
 	}
 
 	playerRepository struct {
@@ -114,4 +115,49 @@ func (r *playerRepository) InsertOnePlayerTransaction(ctx context.Context, playe
 	}
 
 	return nil
+}
+
+func (r *playerRepository) GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	db := r.playerDBConn(ctx)
+	col := db.Collection(database.PlayerTransactionCollection)
+
+	filter := bson.A{
+		bson.D{{Key: "$match", Value: bson.D{{Key: "player_id", Value: playerID}}}},
+		bson.D{
+			{Key: "$group",
+				Value: bson.D{
+					{Key: "_id", Value: "$player_id"},
+					{Key: "balance", Value: bson.D{{Key: "$sum", Value: "$amount"}}},
+				},
+			},
+		},
+		bson.D{
+			{Key: "$project",
+				Value: bson.D{
+					{Key: "_id", Value: 0},
+					{Key: "player_id", Value: "$_id"},
+					{Key: "balance", Value: 1},
+				},
+			},
+		},
+	}
+
+	cursors, err := col.Aggregate(ctx, filter)
+	if err != nil {
+		return nil, errors.New("error: failed to get player saving account")
+	}
+
+	result := new(player.PlayerSavingAccount)
+
+	for cursors.Next(ctx) {
+		if err := cursors.Decode(result); err != nil {
+			log.Printf("Error: GetPlayerSavingAccount: %s", err.Error())
+			return nil, errors.New("error: failed to decode player saving account")
+		}
+	}
+
+	return result, nil
 }
