@@ -1,10 +1,13 @@
 package jwtauth
 
 import (
+	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"google.golang.org/grpc/metadata"
 )
 
 type (
@@ -38,6 +41,11 @@ type (
 	apiKey struct {
 		*authConcrete
 	}
+)
+
+var (
+	apiKeyInstance string
+	once           sync.Once
 )
 
 func (a *authConcrete) SignToken() string {
@@ -116,12 +124,12 @@ func ReloadToken(secret string, expriesAt int64, claims *Claims) string {
 	return token.SignToken()
 }
 
-func NewApiKey(secret string, claims *Claims) AuthFactory {
+func NewApiKey(secret string) AuthFactory {
 	return &apiKey{
 		authConcrete: &authConcrete{
 			Secret: []byte(secret),
 			Claims: &AuthMapClaims{
-				Claims: claims,
+				Claims: &Claims{},
 				RegisteredClaims: jwt.RegisteredClaims{
 					Issuer:    "hello-sekai.com",
 					Subject:   "api-key",
@@ -158,6 +166,17 @@ func ParseToken(secret string, tokenString string) (*AuthMapClaims, error) {
 
 	return nil, errors.New("error: invalid token claims")
 }
+
+func SetApiKey(secret string) {
+	once.Do(func() {
+		apiKeyInstance = NewApiKey(secret).SignToken()
+	})
+}
+
+func SetApiKeyInContext(ctx *context.Context) {
+	*ctx = metadata.NewOutgoingContext(*ctx, metadata.Pairs("auth", apiKeyInstance))
+}
+
 func now() time.Time {
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	return time.Now().In(loc)
