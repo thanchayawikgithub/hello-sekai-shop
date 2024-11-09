@@ -5,6 +5,7 @@ go 1.22.6
 require go.mongodb.org/mongo-driver/v2 v2.0.0-beta2
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/grpc v1.67.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
