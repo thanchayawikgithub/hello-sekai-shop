@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -59,9 +60,10 @@ type (
 // LoadConfig loads the configuration based on the environment and path
 func LoadConfig(state string, service string) *Config {
 	var config Config
-	viper.SetConfigName("config." + service)
+	fmt.Println(state, service)
+	viper.AddConfigPath(fmt.Sprintf("config/%s", state))
+	viper.SetConfigName(fmt.Sprintf("config.%s", service))
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("config/" + state)
 
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))

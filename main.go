@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"github.com/thanchayawikgithub/hello-sekai-shop/config"
@@ -13,13 +12,9 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Check if the state and service arguments are provided
-	if len(os.Args) < 3 {
-		log.Fatal("Error: state and service arguments are required")
-	}
-
-	state := os.Args[1]   // e.g., "dev"
-	service := os.Args[2] // e.g., "auth"
+	// Get environment variables
+	state := os.Getenv("STATE")
+	service := os.Getenv("SERVICE")
 
 	// Load configuration based on state and service
 	cfg := config.LoadConfig(state, service)

@@ -26,10 +26,11 @@ func (s *server) playerServer() {
 		log.Println("Grpc server is running on", s.config.Grpc.PlayerURL)
 	}()
 
-	_ = httpHandler
 	_ = grpcHandler
 	_ = gueueHandler
 
 	player := s.app.Group("/player_v1")
 	player.GET("", s.healthCheckService)
+	player.POST("/register", httpHandler.CreatePlayer)
+	player.GET("/:player_id", httpHandler.GetPlayerProfile)
 }

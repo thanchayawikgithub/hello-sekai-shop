@@ -19,6 +19,6 @@ func NewPaymentRepository(db *mongo.Client) PaymentRepository {
 	return &paymentRepository{db}
 }
 
-func (r *paymentRepository) authDBConn(ctx context.Context) *mongo.Database {
+func (r *paymentRepository) paymentDBConn(ctx context.Context) *mongo.Database {
 	return r.db.Database("payment_db")
 }
