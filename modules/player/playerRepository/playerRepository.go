@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/thanchayawikgithub/hello-sekai-shop/modules/player"
+	"github.com/thanchayawikgithub/hello-sekai-shop/pkg/database"
 	"github.com/thanchayawikgithub/hello-sekai-shop/pkg/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -19,6 +20,7 @@ type (
 		IsUniquePlayer(ctx context.Context, email, username string) bool
 		InsertOnePlayer(ctx context.Context, req *player.Player) (bson.ObjectID, error)
 		FindOnePlayerProfile(ctx context.Context, playerID string) (*player.PlayerProfileBson, error)
+		InsertOnePlayerTransaction(ctx context.Context, playerTransaction *player.PlayerTransaction) error
 	}
 
 	playerRepository struct {
@@ -39,7 +41,7 @@ func (r *playerRepository) IsUniquePlayer(ctx context.Context, email, username s
 	defer cancel()
 
 	db := r.playerDBConn(ctx)
-	col := db.Collection("players")
+	col := db.Collection(database.PlayerCollection)
 
 	player := new(player.Player)
 
@@ -64,7 +66,7 @@ func (r *playerRepository) InsertOnePlayer(ctx context.Context, req *player.Play
 	defer cancel()
 
 	db := r.playerDBConn(ctx)
-	col := db.Collection("players")
+	col := db.Collection(database.PlayerCollection)
 
 	playerID, err := col.InsertOne(ctx, req)
 	if err != nil {
@@ -80,7 +82,7 @@ func (r *playerRepository) FindOnePlayerProfile(ctx context.Context, playerID st
 	defer cancel()
 
 	db := r.playerDBConn(ctx)
-	col := db.Collection("players")
+	col := db.Collection(database.PlayerCollection)
 
 	result := new(player.PlayerProfileBson)
 
@@ -96,4 +98,20 @@ func (r *playerRepository) FindOnePlayerProfile(ctx context.Context, playerID st
 	}
 
 	return result, nil
+}
+
+func (r *playerRepository) InsertOnePlayerTransaction(ctx context.Context, playerTransaction *player.PlayerTransaction) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	db := r.playerDBConn(ctx)
+	col := db.Collection(database.PlayerTransactionCollection)
+
+	_, err := col.InsertOne(ctx, playerTransaction)
+	if err != nil {
+		log.Printf("Error: InsertOnePlayerTransaction: %v", err)
+		return errors.New("error: insert one player transaction failed")
+	}
+
+	return nil
 }

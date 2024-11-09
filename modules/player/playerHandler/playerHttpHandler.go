@@ -16,6 +16,7 @@ type (
 	PlayerHttpHandler interface {
 		CreatePlayer(c echo.Context) error
 		GetPlayerProfile(c echo.Context) error
+		CreatePlayerTransaction(c echo.Context) error
 	}
 
 	playerHttpHandler struct {
@@ -54,4 +55,20 @@ func (h *playerHttpHandler) GetPlayerProfile(c echo.Context) error {
 	}
 
 	return response.Success(c, http.StatusOK, res)
+}
+
+func (h *playerHttpHandler) CreatePlayerTransaction(c echo.Context) error {
+	req := custom.NewCustomRequest(c)
+
+	playerTransactionReq := new(player.CreatePlayerTransactionReq)
+
+	if err := req.Bind(playerTransactionReq); err != nil {
+		return response.Error(c, http.StatusBadRequest, err)
+	}
+
+	if err := h.playerService.CreatePlayerTransaction(c.Request().Context(), playerTransactionReq); err != nil {
+		return response.Error(c, http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, http.StatusCreated, map[string]string{"message": "player transaction created successfully"})
 }

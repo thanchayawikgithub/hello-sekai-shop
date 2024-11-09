@@ -21,7 +21,7 @@ func PlayerMigrate(ctx context.Context, cfg *config.Config) {
 	defer db.Client().Disconnect(ctx)
 
 	//player_transactions
-	col := db.Collection("player_transactions")
+	col := db.Collection(database.PlayerTransactionCollection)
 	indexes, err := col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "player_id", Value: 1}}},
@@ -34,7 +34,7 @@ func PlayerMigrate(ctx context.Context, cfg *config.Config) {
 		log.Printf("Index: %s", index)
 	}
 
-	col = db.Collection("players")
+	col = db.Collection(database.PlayerCollection)
 	indexes, err = col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "email", Value: 1}}},
@@ -101,14 +101,14 @@ func PlayerMigrate(ctx context.Context, cfg *config.Config) {
 		})
 	}
 
-	col = db.Collection("player_transactions")
+	col = db.Collection(database.PlayerTransactionCollection)
 	results, err = col.InsertMany(ctx, playerTransactions)
 	if err != nil {
 		panic(err)
 	}
 	log.Println("Migrate player transactions completed: ", results)
 
-	col = db.Collection("player_transactions_queue")
+	col = db.Collection(database.PlayerTransactionQueueCollection)
 	result, err := col.InsertOne(ctx, bson.M{"offset": -1}, nil)
 	if err != nil {
 		panic(err)

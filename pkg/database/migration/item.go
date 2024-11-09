@@ -21,7 +21,7 @@ func ItemMigrate(ctx context.Context, cfg *config.Config) {
 	defer db.Client().Disconnect(ctx)
 
 	//items
-	col := db.Collection("items")
+	col := db.Collection(database.ItemCollection)
 	indexes, err := col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "title", Value: 1}}},

@@ -19,7 +19,7 @@ func PaymentMigrate(ctx context.Context, cfg *config.Config) {
 	defer db.Client().Disconnect(ctx)
 
 	//payments
-	col := db.Collection("payment_queue")
+	col := db.Collection(database.PaymentQueueCollection)
 
 	results, err := col.InsertOne(ctx, bson.M{"offset": -1}, nil)
 	if err != nil {

@@ -20,7 +20,7 @@ func AuthMigrate(ctx context.Context, cfg *config.Config) {
 	defer db.Client().Disconnect(ctx)
 
 	//auth
-	col := db.Collection("auth")
+	col := db.Collection(database.AuthCollection)
 	indexes, err := col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "player_id", Value: 1}}},
@@ -35,7 +35,7 @@ func AuthMigrate(ctx context.Context, cfg *config.Config) {
 	}
 
 	//roles
-	col = db.Collection("roles")
+	col = db.Collection(database.RolesCollection)
 	indexes, err = col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "_id", Value: 1}}},
 		{Keys: bson.D{{Key: "code", Value: 1}}},

@@ -19,7 +19,7 @@ func InventoryMigrate(ctx context.Context, cfg *config.Config) {
 	defer db.Client().Disconnect(ctx)
 
 	//inventories
-	col := db.Collection("player_inventories")
+	col := db.Collection(database.PlayerInventoryCollection)
 	indexes, err := col.Indexes().CreateMany(ctx, []mongo.IndexModel{
 		{Keys: bson.D{{Key: "player_id", Value: 1}, {Key: "item_id", Value: 1}}},
 	})
@@ -31,7 +31,7 @@ func InventoryMigrate(ctx context.Context, cfg *config.Config) {
 		log.Printf("Index: %s", index)
 	}
 
-	col = db.Collection("player_inventory_queue")
+	col = db.Collection(database.PlayerInventoryQueueCollection)
 	results, err := col.InsertOne(ctx, bson.M{"offset": -1}, nil)
 	if err != nil {
 		panic(err)
