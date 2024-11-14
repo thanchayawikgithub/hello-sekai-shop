@@ -53,7 +53,16 @@ func (s *authService) Login(ctx context.Context, cfg *config.Config, req *auth.P
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		CreatedAt:    utils.LocalTime(),
+		UpdatedAt:    utils.LocalTime(),
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	credential, err := s.authRepo.FindOnePlayerCredential(ctx, credentialID.Hex())
+	if err != nil {
+		return nil, err
+	}
 
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	return &auth.ProfileInterceptor{
@@ -66,8 +75,12 @@ func (s *authService) Login(ctx context.Context, cfg *config.Config, req *auth.P
 		},
 		Credential: &auth.CredentialRes{
 			ID:           credentialID.Hex(),
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
+			PlayerID:     credential.PlayerID,
+			RoleCode:     credential.RoleCode,
+			AccessToken:  credential.AccessToken,
+			RefreshToken: credential.RefreshToken,
+			CreatedAt:    credential.CreatedAt.In(loc),
+			UpdatedAt:    credential.UpdatedAt.In(loc),
 		},
 	}, nil
 }

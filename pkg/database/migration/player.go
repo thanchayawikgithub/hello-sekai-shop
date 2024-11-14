@@ -10,6 +10,7 @@ import (
 	"github.com/thanchayawikgithub/hello-sekai-shop/pkg/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func playerDBConn(cfg *config.Config) *mongo.Database {
@@ -50,8 +51,11 @@ func PlayerMigrate(ctx context.Context, cfg *config.Config) {
 	documents := func() []interface{} {
 		players := []*player.Player{
 			{
-				Email:    "test@test.com",
-				Password: "12345678",
+				Email: "test@test.com",
+				Password: func() string {
+					hashed, _ := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
+					return string(hashed)
+				}(),
 				Username: "test",
 				PlayerRoles: []player.PlayerRole{
 					{
@@ -63,13 +67,36 @@ func PlayerMigrate(ctx context.Context, cfg *config.Config) {
 				UpdatedAt: utils.LocalTime(),
 			},
 			{
-				Email:    "than@mail.com",
-				Password: "than11014",
+				Email: "test2@test.com",
+				Password: func() string {
+					hashed, _ := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
+					return string(hashed)
+				}(),
+				Username: "test2",
+				PlayerRoles: []player.PlayerRole{
+					{
+						RoleTitle: "admin",
+						RoleCode:  1,
+					},
+				},
+				CreatedAt: utils.LocalTime(),
+				UpdatedAt: utils.LocalTime(),
+			},
+			{
+				Email: "than@mail.com",
+				Password: func() string {
+					hashed, _ := bcrypt.GenerateFromPassword([]byte("than11014"), bcrypt.DefaultCost)
+					return string(hashed)
+				}(),
 				Username: "than",
 				PlayerRoles: []player.PlayerRole{
 					{
 						RoleTitle: "admin",
 						RoleCode:  1,
+					},
+					{
+						RoleTitle: "player",
+						RoleCode:  0,
 					},
 				},
 				CreatedAt: utils.LocalTime(),

@@ -23,6 +23,7 @@ type (
 		InsertOnePlayerTransaction(ctx context.Context, playerTransaction *player.PlayerTransaction) error
 		GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error)
 		FindOnePlayerCredential(ctx context.Context, email string) (*player.Player, error)
+		FindOnePlayerProfileToRefresh(ctx context.Context, playerID string) (*player.Player, error)
 	}
 
 	playerRepository struct {
@@ -176,5 +177,28 @@ func (r *playerRepository) FindOnePlayerCredential(ctx context.Context, email st
 		log.Printf("Error: FindOnePlayerCredential: %v", err)
 		return nil, errors.New("error: email is invalid")
 	}
+	return result, nil
+}
+
+func (r *playerRepository) FindOnePlayerProfileToRefresh(ctx context.Context, playerID string) (*player.Player, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	db := r.playerDBConn(ctx)
+	col := db.Collection(database.PlayerCollection)
+
+	result := new(player.Player)
+
+	playerObjID, err := utils.ConvertToObject(playerID)
+	if err != nil {
+		log.Printf("Error: FindOnePlayerProfileToRefresh: %v", err)
+		return nil, errors.New("error: invalid player id")
+	}
+
+	if err := col.FindOne(ctx, bson.M{"_id": playerObjID}).Decode(result); err != nil {
+		log.Printf("Error: FindOnePlayerProfileToRefresh: %v", err)
+		return nil, errors.New("error: player profile not found")
+	}
+
 	return result, nil
 }

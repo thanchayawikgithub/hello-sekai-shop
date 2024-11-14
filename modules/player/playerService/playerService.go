@@ -3,6 +3,7 @@ package playerService
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -20,6 +21,7 @@ type (
 		CreatePlayerTransaction(ctx context.Context, req *player.CreatePlayerTransactionReq) (*player.PlayerSavingAccount, error)
 		GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error)
 		FindOnePlayerCredential(ctx context.Context, email, password string) (*playerPb.PlayerProfile, error)
+		FindOnePlayerProfileToRefresh(ctx context.Context, playerID string) (*playerPb.PlayerProfile, error)
 	}
 
 	playerService struct {
@@ -112,10 +114,34 @@ func (u *playerService) FindOnePlayerCredential(ctx context.Context, email, pass
 
 	roleCode := 0
 	for _, role := range result.PlayerRoles {
+		fmt.Println(role.RoleCode)
 		roleCode += role.RoleCode
 	}
 
 	loc, _ := time.LoadLocation("Asia/Bangkok")
+	return &playerPb.PlayerProfile{
+		Id:        result.ID.Hex(),
+		Email:     result.Email,
+		Username:  result.Username,
+		RoleCode:  int32(roleCode),
+		CreatedAt: result.CreatedAt.In(loc).String(),
+		UpdatedAt: result.UpdatedAt.In(loc).String(),
+	}, nil
+}
+
+func (u *playerService) FindOnePlayerProfileToRefresh(ctx context.Context, playerID string) (*playerPb.PlayerProfile, error) {
+	result, err := u.playerRepo.FindOnePlayerProfileToRefresh(ctx, playerID)
+	if err != nil {
+		return nil, errors.New("error: failed to find one player profile to refresh")
+	}
+
+	loc, _ := time.LoadLocation("Asia/Bangkok")
+
+	roleCode := 0
+	for _, role := range result.PlayerRoles {
+		fmt.Println(role.RoleCode)
+		roleCode += role.RoleCode
+	}
 	return &playerPb.PlayerProfile{
 		Id:        result.ID.Hex(),
 		Email:     result.Email,
