@@ -3,9 +3,11 @@ package playerService
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/thanchayawikgithub/hello-sekai-shop/modules/player"
+	playerPb "github.com/thanchayawikgithub/hello-sekai-shop/modules/player/playerPb"
 	"github.com/thanchayawikgithub/hello-sekai-shop/modules/player/playerRepository"
 	"github.com/thanchayawikgithub/hello-sekai-shop/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
@@ -17,6 +19,7 @@ type (
 		GetPlayerProfile(ctx context.Context, playerID string) (*player.PlayerProfile, error)
 		CreatePlayerTransaction(ctx context.Context, req *player.CreatePlayerTransactionReq) (*player.PlayerSavingAccount, error)
 		GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error)
+		FindOnePlayerCredential(ctx context.Context, email, password string) (*playerPb.PlayerProfile, error)
 	}
 
 	playerService struct {
@@ -94,4 +97,31 @@ func (s *playerService) CreatePlayerTransaction(ctx context.Context, req *player
 
 func (s *playerService) GetPlayerSavingAccount(ctx context.Context, playerID string) (*player.PlayerSavingAccount, error) {
 	return s.playerRepo.GetPlayerSavingAccount(ctx, playerID)
+}
+
+func (u *playerService) FindOnePlayerCredential(ctx context.Context, email, password string) (*playerPb.PlayerProfile, error) {
+	result, err := u.playerRepo.FindOnePlayerCredential(ctx, email)
+	if err != nil {
+		return nil, errors.New("error: failed to find one player credential")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(password)); err != nil {
+		log.Printf("error: FindOnePlayerCredential: %s", err.Error())
+		return nil, errors.New("error: invalid password")
+	}
+
+	roleCode := 0
+	for _, role := range result.PlayerRoles {
+		roleCode += role.RoleCode
+	}
+
+	loc, _ := time.LoadLocation("Asia/Bangkok")
+	return &playerPb.PlayerProfile{
+		Id:        result.ID.Hex(),
+		Email:     result.Email,
+		Username:  result.Username,
+		RoleCode:  int32(roleCode),
+		CreatedAt: result.CreatedAt.In(loc).String(),
+		UpdatedAt: result.UpdatedAt.In(loc).String(),
+	}, nil
 }

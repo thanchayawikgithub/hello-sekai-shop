@@ -25,9 +25,10 @@ func (s *server) authServer() {
 		log.Println("Grpc server is running on", s.config.Grpc.AuthURL)
 	}()
 
-	_ = httpHandler
 	_ = grpcHandler
 
 	auth := s.app.Group("/auth_v1")
 	auth.GET("", s.healthCheckService)
+
+	auth.POST("/login", httpHandler.Login)
 }

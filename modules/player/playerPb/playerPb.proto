@@ -6,7 +6,7 @@ message PlayerProfile {
   string id = 1;
   string email = 2;
   string username = 3;
-  string role_code = 4;
+  int32 role_code = 4;
   string created_at = 5;
   string updated_at = 6;
 }
